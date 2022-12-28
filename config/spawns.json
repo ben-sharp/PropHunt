@@ -1,0 +1,47 @@
+[
+  {
+    "name": "Construction",
+    "hiderSpawnVec": {
+      "x": 117.3423,
+      "y": -427.2239,
+      "z": 41.07928
+    },
+    "hunterSpawnRot": 339.5574035644531,
+    "hunterSpawnVec": {
+      "x": 686.18,
+      "y": 577.8091,
+      "z": 130.4613
+    },
+    "hiderSpawnRot": 346.14404296875
+  },
+  {
+    "name": "Farm",
+    "hiderSpawnVec": {
+      "x": 1437.3709716796876,
+      "y": 1215.2127685546876,
+      "z": 111.62809753417968
+    },
+    "hunterSpawnRot": 88.91352081298828,
+    "hunterSpawnVec": {
+      "x": 686.18,
+      "y": 577.8091,
+      "z": 130.4613
+    },
+    "hiderSpawnRot": 183.52883911132813
+  },
+  {
+    "name": "Recycling",
+    "hiderSpawnVec": {
+      "x": 2394.397,
+      "y": 3118.079,
+      "z": 48.19257
+    },
+    "hunterSpawnRot": 80.38269805908203,
+    "hunterSpawnVec": {
+      "x": 686.18,
+      "y": 577.8091,
+      "z": 130.4613
+    },
+    "hiderSpawnRot": 200.9039001464844
+  }
+]
