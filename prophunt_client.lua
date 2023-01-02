@@ -14,7 +14,7 @@ local function has_value(tab, val)
     return false
 end
 
-local warmupTime = 25
+local warmupTime = 5
 local ourTeamType = ''
 local startTime = 0
 local totalLife = 0
@@ -26,7 +26,7 @@ local afkTime = 0
 local isMarkedAfk = false
 local respawnCooldown = 0
 local changePropCooldown = 0
-local currentSpawnConfig = {name = 'None', hunterSpawnVec = vector3(0,0,0), hunterSpawnRot = 0, hiderSpawnVec = vector3(0,0,0), hiderSpawnRot = 0}
+local currentSpawnConfig = {name = 'None', hunterSpawnVec = vector3(0,0,0), hunterSpawnRot = 0, hiderSpawnVec = vector3(0,0,0), hiderSpawnRot = 0, propHashes = {}}
 local selectedSpawn = nil
 local showScoreboard = false
 local selectedEndPoint = nil
@@ -42,7 +42,7 @@ local forceHunterBlipVisible = {}
 local hunterBlip = {}
 local currentScore = 0
 local extractionBlip = nil
-local possibleHunterWeapons = { {model = 'microsmg', ammo = 48, equip = false} , {model = 'Pistol50', ammo = 27, equip = true} , {model = 'sniperrifle', ammo = 5, equip = false} }
+local possibleHunterWeapons = { {model = 'minigun', ammo = 300, equip = false}, {model = 'microsmg', ammo = 48, equip = false} , {model = 'bat', ammo = 1, equip = true} , {model = 'fireextinguisher', ammo = 50, equip = false} }
 local weaponHash = nil
 local propHashes = {
     { header = 'Barrier', context = '', model = 'prop_barrier_work01a', offset = vector3(0, 0, -1)},
@@ -67,6 +67,11 @@ local propHashes = {
 local lastProp = nil
 local isInvisible = false
 local hasWarmedUp = false
+local hasRespawned = false
+
+local isOutsideBoundary = false
+local outOfBoundsTimer = 10
+local hasTpedToHiders = false
 
 local function count_array(tab)
     count = 0
@@ -98,6 +103,15 @@ Citizen.CreateThread(function()
         end
     end
 
+end)
+
+Citizen.CreateThread(function()
+    while true do
+        Citizen.Wait(0)
+        if ourTeamType == 'hunter' and IsPedShooting(PlayerPedId()) then
+            ApplyDamageToPed(PlayerPedId(), 1, true)
+        end
+    end
 end)
 
 Citizen.CreateThread(function()
@@ -174,20 +188,20 @@ Citizen.CreateThread(function()
         if needsResetHealth then
             needsResetHealth = false
             if ourTeamType == 'hunter' then
-                SetPedMaxHealth(GetPlayerPed(-1), 400)
-                SetEntityHealth(GetPlayerPed(-1), 400)
-                SetPedArmour(GetPlayerPed(-1), 100)
+                -- SetPedMaxHealth(GetPlayerPed(-1), 400)
+                -- SetEntityHealth(GetPlayerPed(-1), 400)
+                -- SetPedArmour(GetPlayerPed(-1), 100)
             else
-                SetPedMaxHealth(GetPlayerPed(-1), 200)
-                SetEntityHealth(GetPlayerPed(-1), 200)
-                SetPedArmour(GetPlayerPed(-1), 0)
+                -- SetPedMaxHealth(GetPlayerPed(-1), 200)
+                -- SetEntityHealth(GetPlayerPed(-1), 200)
+                -- SetPedArmour(GetPlayerPed(-1), 0)
             end
         end
 
         timeRemainingOnFoot = math.clamp(timeRemainingOnFoot + 0.1, 0, 60)
 
         if ourTeamType == 'hunter' then
-            SetEntityInvincible(GetPlayerPed(-1), true)
+            -- SetEntityInvincible(GetPlayerPed(-1), true)
         else
             SetEntityInvincible(GetPlayerPed(-1), false)
         end
@@ -227,7 +241,6 @@ Citizen.CreateThread(function()
         timestart = GetGameTimer()
     end
 end)
-
 Citizen.CreateThread(function()
     while true do
         Wait(0)
@@ -276,17 +289,18 @@ Citizen.CreateThread(function()
             SetTextEntry("STRING")
             SetTextCentre(1)
             if (GetGameTimer() - startTime) / 1000 < warmupTime and ourTeamType ==
-                'hunter' and showScoreboard == false then
-                AddTextComponentString(("~y~Get ready to hunt!\n Kill all the props to set a score!\n%.1f"):format(
+                'hunter' and showScoreboard == false and not hasRespawned then
+                AddTextComponentString(("~y~The game is starting!\n Kill all the props as fast as possible!!\n%.1f"):format(
                                            warmupTime - (GetGameTimer() - startTime) /
                                                1000))
                 DrawText(0.5, 0.2)
-            end
-            if warmupTime - (GetGameTimer() - startTime) / 1000 <= 0 and ourTeamType == 'hunter' and not hasWarmedUp then
-                hasWarmedUp = true
-                SetEntityCoords(PlayerPedId(), selectedSpawn.hiderSpawnVec.x, selectedSpawn.hiderSpawnVec.y, selectedSpawn.hiderSpawnVec.z)
-                Wait(500)
-                DoScreenFadeIn(500)
+                -- hasTpedToHiders = false
+                hasWarmedUp = false
+                isOutsideBoundary = false
+            elseif (GetGameTimer() - startTime) / 1000 < warmupTime and ourTeamType ==
+            'hunter' and showScoreboard == false and hasRespawned then
+                AddTextComponentString("~y~You joined as a hunter!\n Kill all the props as fast as possible!\n")
+                DrawText(0.5, 0.2)
             end
             if warmupTime - (GetGameTimer() - startTime) / 1000 > 0 and totalLife < warmupTime and
                 ourTeamType ~= 'hunter' and showScoreboard == false then
@@ -474,8 +488,12 @@ AddEventHandler('onPropHuntStart',
 
     if ourTeamType == 'hunter' then
         SetPedArmour(GetPlayerPed(-1), 100)
+        SetPlayerHealthRechargeMultiplier(PlayerId(), 0.0)
     else
         SetPedArmour(GetPlayerPed(-1), 0)
+        -- SetPedMaxHealth(GetPlayerPed(-1), 200)
+        -- SetEntityHealth(GetPlayerPed(-1), 105)
+        SetPlayerHealthRechargeMultiplier(PlayerId(), 0.0)
     end
 
     RemoveAllPedWeapons(GetPlayerPed(-1), true)  
@@ -636,11 +654,10 @@ end)
 Citizen.CreateThread(function()
     while true do
         Wait(0)
-        print('reeeeeeee', hasWarmedUp)
-        if not hasWarmedUp and not warmupTime - (GetGameTimer() - startTime) / 1000  > 0 then
-            print('in here now')
+        if warmupTime - (GetGameTimer() - startTime) / 1000 <= 0 and ourTeamType == 'hunter' and not hasWarmedUp then
             hasWarmedUp = true
-            SetEntityCoords(GetPlayerPed(-1), selectedSpawn.hiderSpawnVec.x, selectedSpawn.hiderSpawnVec.y, selectedSpawn.hiderSpawnVec.z)
+            SetEntityCoords(PlayerPedId(), selectedSpawn.hiderSpawnVec.x, selectedSpawn.hiderSpawnVec.y, selectedSpawn.hiderSpawnVec.z)
+            -- hasTpedToHiders = true
             Wait(500)
             DoScreenFadeIn(500)
         end
@@ -720,9 +737,9 @@ end
 
 RegisterCommand('respawngroundbtn', function(source, args, rawcommand)
 
-    if ourTeamType == 'driver' then
+    if ourTeamType == 'hunter' then
         TriggerEvent('chat:addMessage',
-                     {args = {'Unable to respawn.... you are the driver!'}})
+                     {args = {'Unable to respawn.... you are a hunter!'}})
         return
     end
     if respawnCooldown > 0 then
@@ -735,6 +752,7 @@ RegisterCommand('respawngroundbtn', function(source, args, rawcommand)
         return
     end
 
+    hasRespawned = true
     respawnCooldown = 5
     print('Requesting Start for ' .. GetPlayerName(PlayerId()) .. ' in progress')
     local currentCoords = GetEntityCoords(PlayerPedId())
@@ -769,6 +787,63 @@ RegisterCommand('scoreboard', function(source, args, rawcommand)
   
 end, false)
 
+
+-- SetEntityRotation
+
+RegisterCommand("triggerChangeRotationMenu", function()
+    if ourTeamType == 'hunter' then
+        TriggerEvent('chat:addMessage',
+                     {args = {'Unable to affect props.... you are a hunter!'}})
+        return
+    end
+
+    TriggerEvent("nh-context:changeRotationMenu")
+end)
+
+RegisterNetEvent('rotate', function(amount)
+
+    if not amount then
+        amount = 10
+    end
+
+    if lastProp then
+        local currentRotation = GetEntityRotation(lastProp, 2)
+        SetEntityRotation(lastProp, currentRotation.x, currentRotation.y, currentRotation.z+amount)
+        TriggerEvent("nh-context:changeRotationMenu")
+    end
+
+end)
+
+RegisterNetEvent('closeMenu', function(amount)
+
+--   rly be doin nothin tho
+
+end)
+
+RegisterNetEvent("nh-context:changeRotationMenu", function()
+
+    local menu = {
+        {
+            header = "Rotate Object",
+            context = "click to close",
+            event = "closeMenu",
+        },
+        {
+            header = "Rotate Left",
+            context = "",
+            event = "rotate",
+            args = {10}
+        },
+        {
+            header = "Rotate Right",
+            context = "",
+            event = "rotate",
+            args = {-10}
+        }
+    }
+    TriggerEvent("nh-context:createMenu", menu)
+end)
+
 RegisterCommand("triggerChangePropMenu", function()
     if ourTeamType == 'hunter' then
         TriggerEvent('chat:addMessage',
@@ -792,7 +867,7 @@ RegisterNetEvent("nh-context:changePropMenu", function()
         }
     }
     
-    for k, v in pairs(propHashes) do
+    for k, v in pairs(selectedSpawn.propHashes) do
         table.insert(menu,  {
             header = v.header,
             context = v.context,
@@ -805,8 +880,8 @@ RegisterNetEvent("nh-context:changePropMenu", function()
 end)
 
 RegisterNetEvent('changeProp', function(propIndex)
-    local modelHash = propHashes[propIndex].model -- The ` return the jenkins hash of a string. see more at: https://cookbook.fivem.net/2019/06/23/lua-support-for-compile-time-jenkins-hashes/
-    local modelOffset = propHashes[propIndex].offset
+    local modelHash = selectedSpawn.propHashes[propIndex].model -- The ` return the jenkins hash of a string. see more at: https://cookbook.fivem.net/2019/06/23/lua-support-for-compile-time-jenkins-hashes/
+    local modelOffset = selectedSpawn.propHashes[propIndex].offset
     if not HasModelLoaded(modelHash) then
         -- If the model isnt loaded we request the loading of the model and wait that the model is loaded
         RequestModel(modelHash)
@@ -824,6 +899,10 @@ RegisterNetEvent('changeProp', function(propIndex)
     SetEntityVisible(PlayerPedId(), false, 0)
     FreezeEntityPosition(PlayerPedId(), true)
     isInvisible = true
+    DisableCamCollisionForObject(lastProp)
+    DisableCamCollisionForEntity(PlayerPedId())
+    SetPedMaxHealth(GetPlayerPed(-1), 200)
+    SetEntityHealth(GetPlayerPed(-1), 105)
 end)
 
 RegisterNetEvent('unfreeze', function()
@@ -831,9 +910,99 @@ RegisterNetEvent('unfreeze', function()
     SetEntityVisible(PlayerPedId(), true, 0)
     FreezeEntityPosition(PlayerPedId(), false)
     isInvisible = false
+    SetFollowPedCamViewMode(2)
+    SetPedMaxHealth(GetPlayerPed(-1), 200)
+    SetEntityHealth(GetPlayerPed(-1), 200)
 end)
 
 
 RegisterKeyMapping('triggerChangePropMenu', 'Props Menu', "keyboard", "F3")
+RegisterKeyMapping('triggerChangeRotationMenu', 'Rotation Menu', "keyboard", "F4")
 
+local BikerZone = PolyZone:Create({
+    vector2(114.54899597168, 3575.7958984375),
+    vector2(2.8394038677216, 3607.1860351563),
+    vector2(-30.212800979614, 3727.9226074219),
+    vector2(53.68452835083, 3770.6591796875),
+    vector2(106.63172912598, 3769.7277832031),
+    vector2(129.77914428711, 3745.66796875),
+    vector2(143.52568054199, 3701.1713867188)
+  }, {
+    name="BikerZone",
+    debugPoly=true,
+    debugColors={
+        walls = {255, 0, 0},
+        outline = {255, 0, 0}
+    }
+  })  
 
+BikerZone:onPlayerInOut(function(isPointInside, point)
+    if gameStarted and hasWarmedUp and selectedSpawn.name == 'biker' and not isPointInside then
+        isOutsideBoundary = true
+    else
+        isOutsideBoundary = false
+        outOfBoundsTimer = 10
+    end
+end)
+
+--Name: ConstructionZone | 2022-12-30T08:35:48Z
+local ConstructionZone = PolyZone:Create({
+    vector2(118.92674255371, -462.50555419922),
+    vector2(95.110092163086, -465.68246459961),
+    vector2(81.165557861328, -466.64953613281),
+    vector2(62.993534088135, -466.52542114258),
+    vector2(49.983062744141, -465.68301391602),
+    vector2(36.495502471924, -464.38055419922),
+    vector2(-12.329765319824, -454.49566650391),
+    vector2(-0.12427294254303, -420.29681396484),
+    vector2(10.720978736877, -379.21878051758),
+    vector2(29.277744293213, -336.7353515625),
+    vector2(42.225563049316, -306.73675537109),
+    vector2(162.58502197266, -350.50848388672)
+  }, {
+    name="ConstructionZone",
+    debugPoly=true,
+    debugColors={
+        walls = {255, 0, 0},
+        outline = {255, 0, 0}
+    }
+  })
+  
+  ConstructionZone:onPlayerInOut(function(isPointInside, point)
+    if gameStarted and hasWarmedUp and selectedSpawn.name == 'construction' and not isPointInside then
+        isOutsideBoundary = true
+    else
+        isOutsideBoundary = false
+        outOfBoundsTimer = 10
+    end
+end)
+
+Citizen.CreateThread(function()
+    while true do
+        Citizen.Wait(0)
+        if isOutsideBoundary then
+            outOfBoundsTimer = outOfBoundsTimer - 0.01
+
+            SetTextFont(0)
+            SetTextProportional(1)
+            SetTextScale(0.0, 0.5)
+            SetTextColour(255, 0, 0, 255)
+            SetTextDropshadow(0, 0, 0, 0, 255)
+            SetTextEdge(2, 0, 0, 0, 150)
+            SetTextDropShadow()
+            SetTextOutline()
+            SetTextEntry("STRING")
+            SetTextCentre(1)
+            AddTextComponentString(("Get back into the play area! \n%.1f"):format(outOfBoundsTimer))
+            DrawText(0.5, 0.4)
+
+            if outOfBoundsTimer <= 0 then
+                SetEntityCoords(GetPlayerPed(-1), selectedSpawn.hiderSpawnVec.x, selectedSpawn.hiderSpawnVec.y, selectedSpawn.hiderSpawnVec.z)
+                isOutsideBoundary = false
+                outOfBoundsTimer = 10
+                Wait(500)
+                DoScreenFadeIn(500)
+            end
+        end
+    end
+end)

@@ -1,47 +1,424 @@
 [
   {
-    "name": "Construction",
-    "hiderSpawnVec": {
-      "x": 117.3423,
-      "y": -427.2239,
-      "z": 41.07928
-    },
-    "hunterSpawnRot": 339.5574035644531,
-    "hunterSpawnVec": {
-      "x": 686.18,
-      "y": 577.8091,
-      "z": 130.4613
-    },
-    "hiderSpawnRot": 346.14404296875
+      "hiderSpawnRot": 346.14404296875,
+      "hiderSpawnVec": {
+          "z": 41.07928,
+          "y": -427.2239,
+          "x": 117.3423
+      },
+      "propHashes": [
+          {
+              "context": "",
+              "header": "Barrier",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_barrier_work01a"
+          },
+          {
+              "context": "",
+              "header": "Barrier (wide)",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_barrier_work04a"
+          },
+          {
+              "context": "",
+              "header": "Blowtorch",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_tool_blowtorch"
+          },
+          {
+              "context": "",
+              "header": "Broom",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_tool_broom2"
+          },
+          {
+              "context": "",
+              "header": "Broom (2)",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_tool_broom"
+          },
+          {
+              "context": "",
+              "header": "Cable Spool",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_tool_cable01"
+          },
+          {
+              "context": "",
+              "header": "CementBags Pallet",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_cementbags01"
+          },
+          {
+              "context": "",
+              "header": "Chilly Bin",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_tool_box_05"
+          },
+          {
+              "context": "",
+              "header": "Concrete Barrier",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_barier_conc_02b"
+          },
+          {
+              "context": "",
+              "header": "Concrete Barrier (2)",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_barier_conc_05b"
+          },
+          {
+              "context": "",
+              "header": "Concrete Blocks Pallet",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_conc_blocks01a"
+          },
+          {
+              "context": "",
+              "header": "Concrete Sacks",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_conc_sacks_02a"
+          },
+          {
+              "context": "",
+              "header": "Construction Cone",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_roadpole_01b"
+          },
+          {
+              "context": "",
+              "header": "Cordless Drill",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_tool_drill"
+          },
+          {
+              "context": "",
+              "header": "Generator",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_generator_03b"
+          },
+          {
+              "context": "",
+              "header": "Generator (small)",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_generator_01a"
+          },
+          {
+              "context": "",
+              "header": "Hardhat",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_tool_hardhat"
+          },
+          {
+              "context": "",
+              "header": "Jerry Can",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_jerrycan_01a"
+          },
+          {
+              "context": "",
+              "header": "Large Cone",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_barrier_wat_03b"
+          },
+          {
+              "context": "",
+              "header": "Paint Brush",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_paint_brush03"
+          },
+          {
+              "context": "",
+              "header": "Paint Can",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_paints_can07"
+          },
+          {
+              "context": "",
+              "header": "Paint Can (2)",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_paints_can03"
+          },
+          {
+              "context": "",
+              "header": "Portaloo",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_portaloo_01a"
+          },
+          {
+              "context": "",
+              "header": "Road Cone",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_roadcone01a"
+          },
+          {
+              "context": "",
+              "header": "Road Cone (2)",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_roadcone01c"
+          },
+          {
+              "context": "",
+              "header": "Road Cone (3)",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_roadcone02a"
+          },
+          {
+              "context": "",
+              "header": "Soda Can (Cola)",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_ecola_can"
+          },
+          {
+              "context": "",
+              "header": "Soda Can (Splunk)",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_ld_can_01"
+          },
+          {
+              "context": "",
+              "header": "Spraypaint Can",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_cs_spray_can"
+          },
+          {
+              "context": "",
+              "header": "Tool Bench",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_tool_bench02_ld"
+          },
+          {
+              "context": "",
+              "header": "Toolbox",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_tool_box_06"
+          },
+          {
+              "context": "",
+              "header": "Toolbox (2)",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_tool_box_04"
+          },
+          {
+              "context": "",
+              "header": "Warning Sign",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_barrier_work01d"
+          },
+          {
+              "context": "Northern Lights - Cannabis Indica",
+              "header": "Weed Plant",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_weed_01"
+          },
+          {
+              "context": "",
+              "header": "Wheelbarrow",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_wheelbarrow01a"
+          },
+          {
+              "context": "",
+              "header": "Work Light",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_worklight_04b"
+          },
+          {
+              "context": "",
+              "header": "Work Light (2)",
+              "offset": {
+                  "z": -1,
+                  "y": 0,
+                  "x": 0
+              },
+              "model": "prop_worklight_01a"
+          }
+      ],
+      "hunterSpawnVec": {
+          "z": 130.4613,
+          "y": 577.8091,
+          "x": 686.18
+      },
+      "hunterSpawnRot": 339.5574035644531,
+      "name": "construction"
   },
   {
-    "name": "Farm",
-    "hiderSpawnVec": {
-      "x": 1437.3709716796876,
-      "y": 1215.2127685546876,
-      "z": 111.62809753417968
-    },
-    "hunterSpawnRot": 88.91352081298828,
-    "hunterSpawnVec": {
-      "x": 686.18,
-      "y": 577.8091,
-      "z": 130.4613
-    },
-    "hiderSpawnRot": 183.52883911132813
-  },
-  {
-    "name": "Recycling",
-    "hiderSpawnVec": {
-      "x": 2394.397,
-      "y": 3118.079,
-      "z": 48.19257
-    },
-    "hunterSpawnRot": 80.38269805908203,
-    "hunterSpawnVec": {
-      "x": 686.18,
-      "y": 577.8091,
-      "z": 130.4613
-    },
-    "hiderSpawnRot": 200.9039001464844
+      "hiderSpawnRot": 222.11753845214845,
+      "hiderSpawnVec": {
+          "x": 56.51882553100586,
+          "y": 3717.5068359375,
+          "z": 39.75396347045898
+      },
+      "name": "biker",
+      "pz": "BikerZone",
+      "hunterSpawnVec": {
+          "z": 130.4613,
+          "y": 577.8091,
+          "x": 686.18
+      },
+      "hunterSpawnRot": 339.5574035644531,
+      "propHashes": [
+        {"context": "","header": "Alcohol Bottles","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_bikerset"},
+        {"context": "","header": "Bar Stool","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_bar_stool_01"},
+        {"context": "","header": "Car Jack","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_carjack"},
+        {"context": "","header": "Compressor","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_compressor_02"},
+        {"context": "","header": "Engine Hoist","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_engine_hoist"},
+        {"context": "","header": "Old Tyre","offset": {"z": -1,"y": 0,"x": 0},"model": "ng_proc_tyre_01"},
+        {"context": "","header": "Pot Plant","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_pot_plant_03b_cr2"},
+        {"context": "","header": "Rubbish Bag (2)","offset": {"z": -1,"y": 0,"x": 0},"model": "ng_proc_binbag_02a"},
+        {"context": "","header": "Rubbish Bag","offset": {"z": -1,"y": 0,"x": 0},"model": "ng_proc_binbag_01a"},
+        {"context": "","header": "Soda Can (Cola)","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_ecola_can"},
+        {"context": "","header": "Soda Can (Splunk)","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_ld_can_01"},
+        {"context": "","header": "Spraypaint Can","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_cs_spray_can"},
+        {"context": "","header": "Tequila","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_tequila_bottle"},
+        {"context": "","header": "Tool Bench","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_tool_bench02_ld"},
+        {"context": "","header": "Toolbox","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_tool_box_06"},
+        {"context": "","header": "Wheelbarrow","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_wheelbarrow01a"},
+        {"context": "Northern Lights - Cannabis Indica","header": "Weed Plant","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_weed_01"}
+      ]
   }
 ]

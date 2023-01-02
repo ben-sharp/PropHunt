@@ -9,6 +9,7 @@ local defaultLocation =
     'resources\\PropHunt\\config\\'
 local respawnPoint = vector3(0, 0, 0)
 local totalLife = 0
+local hasStarted = false
 
 local function has_value(tab, val)
     for index, value in ipairs(tab) do if value == val then return true end end
@@ -169,8 +170,9 @@ AddEventHandler('OnRequestedStart', function()
     if total_players >= 5 then
         totalhunters = 2
     end
-
-    -- totalhunters = 0 -- debug force single player to be a hider
+    
+    local forceHider = true -- debug set to true to force players to be hiders
+    if forceHider then totalhunters = 0 end
 
     while #hunterIdxs < totalhunters do
         local hunterIdx = math.random(1, total_players)
@@ -198,7 +200,11 @@ AddEventHandler('OnRequestedStart', function()
             send_global_message(
                 ('^1%s was selected as a hunter!'):format(name))
             TriggerClientEvent('onPropHuntStart', playerId, 'hunter', selectedSpawn.hunterSpawnVec, selectedSpawn.hunterSpawnRot, hunters, selectedSpawn, true)
-            TriggerClientEvent('onPropHuntAfterWarmup', playerId)
+            
+            if not hasStarted then
+                TriggerClientEvent('onPropHuntAfterWarmup', playerId)
+                hasStarted = true
+            end
             send_global_message('^3' .. total_players .. ' players in game.')
             print('Spawning ' .. name .. ' as the hunter')
         end
@@ -263,22 +269,13 @@ AddEventHandler('OnRequestJoinInProgress', function(playerId)
         end
 
         if outHunterIdx == -1 then
-            local hiderSpawn = vector3(selectedSpawn.hunterSpawnVec.x, selectedSpawn.hunterSpawnVec.y, selectedSpawn.hunterSpawnVec.z)
-            if respawnPoint ~= vector3(0, 0, 0) then
-                print('Starting ' .. GetPlayerName(playerId) .. ' in progress as hunter')
-                TriggerClientEvent('onPropHuntStart', playerId, 'hunter',
-                                respawnPoint +
-                                    vector3(math.random(-10, 10),
-                                            math.random(-10, 10), 0),
-                                respawnRot, hunters, selectedSpawn, gameStarted)
-            else
-                print('Starting ' .. GetPlayerName(playerId) .. ' in progress as hunter')
-                TriggerClientEvent('onPropHuntStart', playerId, 'hunter',
-                    hiderSpawn +
-                                    vector3(math.random(-10, 10),
-                                            math.random(-10, 10), 0),
-                                respawnRot, hunters, selectedSpawn, gameStarted)
-            end
+            local hiderSpawn = vector3(selectedSpawn.hiderSpawnVec.x, selectedSpawn.hiderSpawnVec.y, selectedSpawn.hiderSpawnVec.z)
+            print('Starting ' .. GetPlayerName(playerId) .. ' in progress as hunter')
+            TriggerClientEvent('onPropHuntStart', playerId, 'hunter',
+                hiderSpawn +
+                                vector3(math.random(-10, 10),
+                                        math.random(-10, 10), 0),
+                            respawnRot, hunters, selectedSpawn, gameStarted)
         end
     end
 end)
@@ -466,6 +463,8 @@ Citizen.CreateThread(function()
     end
 
 end)
+
+
 
 Citizen.CreateThread(function()
     while true do
