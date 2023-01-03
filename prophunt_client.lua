@@ -116,12 +116,6 @@ end)
 
 Citizen.CreateThread(function()
     while true do
-        -- These natives has to be called every frame.
-        SetVehicleDensityMultiplierThisFrame(1.0)
-        SetPedDensityMultiplierThisFrame(1.0)
-        SetRandomVehicleDensityMultiplierThisFrame(1.0)
-        SetParkedVehicleDensityMultiplierThisFrame(1.0)
-        SetScenarioPedDensityMultiplierThisFrame(1.0, 1.0)
         local playerPed = GetPlayerPed(-1)
         hunterPed = playerPed
 
@@ -232,12 +226,6 @@ Citizen.CreateThread(function()
         if (GetGameTimer() - startTime) / 1000 > warmupTime then
             totalLife =  totalLife + delta_time
         end
-        local wantedLevel = 0
-        if GetPlayerWantedLevel(PlayerId()) ~= wantedLevel then
-            SetPlayerWantedLevel(PlayerId(), wantedLevel, false)
-            SetPlayerWantedLevelNow(PlayerId(), false)
-        end
-       
         timestart = GetGameTimer()
     end
 end)
@@ -1006,3 +994,37 @@ Citizen.CreateThread(function()
         end
     end
 end)
+
+Citizen.CreateThread(
+	function()
+		while true do
+			Citizen.Wait(0)
+			local playerPed = GetPlayerPed(-1)
+			local playerId = PlayerId()
+			local pos = GetEntityCoords(playerPed)
+			RemoveVehiclesFromGeneratorsInArea(
+				pos['x'] - 750.0,
+				pos['y'] - 750.0,
+				pos['z'] - 750.0,
+				pos['x'] + 750.0,
+				pos['y'] + 750.0,
+				pos['z'] + 750.0
+			)
+			for i = 1, 12 do
+				EnableDispatchService(i, false)
+			end
+			SetPlayerWantedLevel(playerId, 0, false)
+			SetPlayerWantedLevelNow(playerId, false)
+			SetPlayerWantedLevelNoDrop(playerId, 0, false)
+			SetPedPopulationBudget(0)
+			SetPedDensityMultiplierThisFrame(0)
+			SetScenarioPedDensityMultiplierThisFrame(0, 0)
+			SetPedPopulationBudget(0)
+			SetVehicleDensityMultiplierThisFrame(0)
+			SetRandomVehicleDensityMultiplierThisFrame(0)
+			SetParkedVehicleDensityMultiplierThisFrame(0)
+			SetPoliceIgnorePlayer(playerPed, true)
+			SetDispatchCopsForPlayer(playerPed, false)
+		end
+	end
+)
