@@ -44,26 +44,6 @@ local currentScore = 0
 local extractionBlip = nil
 local possibleHunterWeapons = { {model = 'minigun', ammo = 300, equip = false}, {model = 'microsmg', ammo = 48, equip = false} , {model = 'bat', ammo = 1, equip = true} , {model = 'fireextinguisher', ammo = 50, equip = false} }
 local weaponHash = nil
-local propHashes = {
-    { header = 'Barrier', context = '', model = 'prop_barrier_work01a', offset = vector3(0, 0, -1)},
-    { header = 'Blowtorch', context = 'Light shit on fire', model = 'prop_tool_blowtorch', offset = vector3(0, 0, -1)},
-    { header = 'Candy Box', context = '', model = 'prop_candy_pqs', offset = vector3(0, 0, -1)},
-    { header = 'Generator', context = '', model = 'prop_generator_03b', offset = vector3(0, 0, -1)},
-    { header = 'Paint Can 1', context = '', model = 'prop_paints_can07', offset = vector3(0, 0, -1)},
-    { header = 'Paint Can 2', context = '', model = 'prop_paints_can03', offset = vector3(0, 0, -1)},
-    { header = 'JerryCan', context = '', model = 'prop_jerrycan_01a', offset = vector3(0, 0, -1)},
-    { header = 'Keyboard (beige)', context = '', model = 'prop_keyboard_01a', offset = vector3(0, 0, -1)},
-    { header = 'Mouse (beige)', context = '', model = 'prop_mouse_01a', offset = vector3(0, 0, -1)},
-    { header = 'Soda Can (Cola)', context = '', model = 'prop_ecola_can', offset = vector3(0, 0, -1)},
-    { header = 'Soda Can (Splunk)', context = '', model = 'prop_ld_can_01', offset = vector3(0, 0, -1)},
-    { header = 'Spraypaint Can', context = '', model = 'prop_cs_spray_can', offset = vector3(0, 0, -1)},
-    { header = 'Streetlight (1)', context = '', model = 'prop_streetlight_05', offset = vector3(0, 0, -1)},
-    { header = 'Streetlight (2)', context = '', model = 'prop_streetlight_03d', offset = vector3(0, 0, -1)},
-    { header = 'Streetlight (3)', context = '', model = 'prop_streetlight_11c', offset = vector3(0, 0, -1)},
-    { header = 'Weed Plant', context = 'Northern Lights - Cannabis Indica', model = 'prop_weed_01', offset = vector3(0, 0, -1)},
-    { header = 'Worklight 1', context = '', model = 'prop_worklight_04b', offset = vector3(0, 0, -1)},
-    { header = 'Worklight 2', context = '', model = 'prop_worklight_01a', offset = vector3(0, 0, -1)}
-}
 local lastProp = nil
 local isInvisible = false
 local hasWarmedUp = false
@@ -71,7 +51,6 @@ local hasRespawned = false
 
 local isOutsideBoundary = false
 local outOfBoundsTimer = 10
-local hasTpedToHiders = false
 
 local function count_array(tab)
     count = 0
@@ -282,7 +261,6 @@ Citizen.CreateThread(function()
                                            warmupTime - (GetGameTimer() - startTime) /
                                                1000))
                 DrawText(0.5, 0.2)
-                -- hasTpedToHiders = false
                 hasWarmedUp = false
                 isOutsideBoundary = false
             elseif (GetGameTimer() - startTime) / 1000 < warmupTime and ourTeamType ==
@@ -645,7 +623,6 @@ Citizen.CreateThread(function()
         if warmupTime - (GetGameTimer() - startTime) / 1000 <= 0 and ourTeamType == 'hunter' and not hasWarmedUp then
             hasWarmedUp = true
             SetEntityCoords(PlayerPedId(), selectedSpawn.hiderSpawnVec.x, selectedSpawn.hiderSpawnVec.y, selectedSpawn.hiderSpawnVec.z)
-            -- hasTpedToHiders = true
             Wait(500)
             DoScreenFadeIn(500)
         end

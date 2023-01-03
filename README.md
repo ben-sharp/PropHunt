@@ -11,8 +11,8 @@ game objects and place themselves within the game strategically to hide from the
 
 - `hunters` lose HP using guns but not melee weapons
 - `hiders` only have 1 HP when hidden as a prop
-- `hiders` become hunters after they die
-- `hunters` gain points for time alive
+- `hiders` become `hunters` after they die
+- `hiders` gain points for time alive
  
 
 # Installation
@@ -22,5 +22,5 @@ Clone the repo and add its contents to a folder called `PropHunt` inside your `r
 [PolyZone](https://github.com/mkafrin/PolyZone/releases) is required for the playzone boundaries, download `PolyZone.zip`, add it to `resources` as a folder named `PolyZone` and add `ensure PolyZone` to your `server.cfg` - use `start PolyZone` if it's not running. 
 
 # Todos / Ideas
-- [ ] send `hiders` away during a timer on respawn? (idea is they may know current hiders location and they may want to move)
+- [ ] send `hunters` away during a timer on respawn? (idea is they may know current hiders location and they may want to move)
 - [ ] `hunters` could regain HP if they kill a `hider`?
