@@ -406,9 +406,16 @@
         {"context": "","header": "Bar Stool","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_bar_stool_01"},
         {"context": "","header": "Car Jack","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_carjack"},
         {"context": "","header": "Compressor","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_compressor_02"},
+        {"context": "","header": "Deck Chair","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_old_deck_chair"},
         {"context": "","header": "Engine Hoist","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_engine_hoist"},
+        {"context": "","header": "Milk Crate","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_crate_11b"},
+        {"context": "","header": "Oil Barrel","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_barrel_03a"},
+        {"context": "","header": "Old Couch","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_rub_couch04"},
         {"context": "","header": "Old Tyre","offset": {"z": -1,"y": 0,"x": 0},"model": "ng_proc_tyre_01"},
+        {"context": "","header": "Pizza Box","offset": {"z": -1,"y": 0,"x": 0},"model": "v_ret_fh_pizza02"},
+        {"context": "","header": "Plastic Chairs (stacked)","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_chair_pile_01"},
         {"context": "","header": "Pot Plant","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_pot_plant_03b_cr2"},
+        {"context": "","header": "Rocking Chair","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_rock_chair_01"},
         {"context": "","header": "Rubbish Bag (2)","offset": {"z": -1,"y": 0,"x": 0},"model": "ng_proc_binbag_02a"},
         {"context": "","header": "Rubbish Bag","offset": {"z": -1,"y": 0,"x": 0},"model": "ng_proc_binbag_01a"},
         {"context": "","header": "Soda Can (Cola)","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_ecola_can"},
@@ -418,6 +425,7 @@
         {"context": "","header": "Tool Bench","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_tool_bench02_ld"},
         {"context": "","header": "Toolbox","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_tool_box_06"},
         {"context": "","header": "Wheelbarrow","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_wheelbarrow01a"},
+        {"context": "","header": "Wooden Chair","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_clown_chair"},
         {"context": "Northern Lights - Cannabis Indica","header": "Weed Plant","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_weed_01"}
       ]
   }
