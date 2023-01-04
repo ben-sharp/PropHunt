@@ -823,7 +823,9 @@ RegisterNetEvent("nh-context:changePropMenu", function()
 
     local menu = {
         {
-            header = "Props List"
+            header = "Props List",
+            context = "click to close",
+            event = "closeMenu",
         },
         {
             header = "UNFREEZE!",
