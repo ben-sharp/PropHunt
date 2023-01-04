@@ -116,7 +116,7 @@ function loadTable(filename)
     if not file then
         -- Error occurred; output the cause
         print("File error(load): " .. errorString)
-        if string.find(filename, 'ranks') then
+        if string.find(filename, 'rankshunter') then
             saveTable({
                 {rank = 1, name = 'None', points = 0, players = 0},
                 {rank = 2, name = 'None', points = 0, players = 0},
@@ -129,8 +129,24 @@ function loadTable(filename)
                 {rank = 9, name = 'None', points = 0, players = 0},
                 {rank = 10, name = 'None', points = 0, players = 0}
 
-            }, 'ranks' .. selectedSpawn.name .. '.json')
-            return loadTable('ranks' .. selectedSpawn.name .. '.json')
+            }, 'rankshunter' .. selectedSpawn.name .. '.json')
+            return loadTable('rankshunter' .. selectedSpawn.name .. '.json')
+        end
+        if string.find(filename, 'rankshider') then
+            saveTable({
+                {rank = 1, name = 'None', points = 0, players = 0},
+                {rank = 2, name = 'None', points = 0, players = 0},
+                {rank = 3, name = 'None', points = 0, players = 0},
+                {rank = 4, name = 'None', points = 0, players = 0},
+                {rank = 5, name = 'None', points = 0, players = 0},
+                {rank = 6, name = 'None', points = 0, players = 0},
+                {rank = 7, name = 'None', points = 0, players = 0},
+                {rank = 8, name = 'None', points = 0, players = 0},
+                {rank = 9, name = 'None', points = 0, players = 0},
+                {rank = 10, name = 'None', points = 0, players = 0}
+
+            }, 'rankshider' .. selectedSpawn.name .. '.json')
+            return loadTable('rankshider' .. selectedSpawn.name .. '.json')
         end
     else
         -- Read data from file
@@ -144,8 +160,8 @@ function loadTable(filename)
     end
 end
 
-
-local ranks = loadTable('ranks.json')
+local hunterRanks = loadTable('rankshunter.json')
+local hiderRanks = loadTable('rankshider.json')
 local spawns = loadTable('spawns.json')
 total_spawns = count_array(spawns)
 selectedSpawn = spawns[math.random(1, total_spawns)]
@@ -173,7 +189,8 @@ AddEventHandler('OnRequestedStart', function()
     total_spawns = count_array(spawns)
     selectedSpawn = spawns[math.random(1, total_spawns)]
     print('Spawning at ' .. selectedSpawn.name)
-    ranks = loadTable('ranks' .. selectedSpawn.name .. '.json')
+    hunterRanks = loadTable('rankshunter' .. selectedSpawn.name .. '.json')
+    hiderRanks = loadTable('rankshider' .. selectedSpawn.name .. '.json')
 
     local hunterIdxs = {}
     local totalhunters = 1 -- set lower hunter to begin with then as each hider dies they become a hunter
@@ -277,6 +294,16 @@ AddEventHandler('OnRequestJoinInProgress', function(playerId)
             end
         end
 
+        outHiderIdx = -1
+        for Idx, v in ipairs(hiders) do
+            if v == GetPlayerName(source) then
+                outHiderIdx = Idx
+            end
+        end
+        if outHiderIdx ~= -1 then
+            table.remove(hiders, outHiderIdx)
+        end
+
         if outHunterIdx == -1 then
             local hiderSpawn = vector3(selectedSpawn.hiderSpawnVec.x, selectedSpawn.hiderSpawnVec.y, selectedSpawn.hiderSpawnVec.z)
             print('Starting ' .. GetPlayerName(playerId) .. ' in progress as hunter')
@@ -368,7 +395,8 @@ end)
 
 RegisterNetEvent('OnNotifyKilled')
 AddEventHandler('OnNotifyKilled', function(Name, LifeTime)
-
+    local scoreboardTeam = 'hunters'
+    
     if not gameStarted then
        return
     end    
@@ -397,7 +425,7 @@ AddEventHandler('OnNotifyKilled', function(Name, LifeTime)
 
     if outHiderIdx ~= -1 then
         table.remove(hiders, outHiderIdx)
-    
+        scoreboardTeam = 'hiders'
         send_global_message(GetPlayerName(source) .. ' has been killed! Total Life: ' .. LifeTime ..
         ' Seconds\nHiders Remaining: ' .. #hiders)
     
@@ -426,55 +454,101 @@ AddEventHandler('OnNotifyKilled', function(Name, LifeTime)
 
     newhighScoreIdx = -1
 
-    send_global_message('^6' .. Name .. ' has ended the game!')
+    send_global_message('^6 Game Over!')
    
 
     local isOnLeaderboard = false
     local hasHigherScoreOnLeaderboard = false
     local previousRankIdx = -1
-    oldRanks = deepcopy(ranks)
+    oldHunterRanks = deepcopy(hunterRanks)
+    oldHiderRanks = deepcopy(hiderRanks)
     total_players = count_array(GetSpawnedPlayers())
-    for i, player in pairs(ranks) do
-        if LifeTime * (total_players * 1.68 - 1) < player.points *
-            (player.players * 1.68 - 1) and Name == player.name then
-            send_global_message(Name ..
-                                    ' score was lower than their previous score on the leaderboard. Score will not be counted.')
-            hasHigherScoreOnLeaderboard = true
-        end
-        if Name == player.name then
-            table.remove(ranks, i)
-            isOnLeaderboard = true
-            previousRankIdx = i
-            break
-        end
-    end
 
-    local replacedPlayerScore = nil
-
-    if hasHigherScoreOnLeaderboard == false then
-        for i, player in pairs(ranks) do
-            if LifeTime * (total_players * 1.68 - 1) > player.points *
-                (player.players * 1.68 - 1) then
-                local rank = {name = Name, points = LifeTime, players = total_players}
-                print(rank.points)
-                table.insert(ranks, i, rank)
-                newhighScoreIdx = i
+    if scoreboardTeam == 'hunters' then
+        for i, player in pairs(hunterRanks) do
+            if LifeTime * (total_players * 1.68 - 1) < player.points *
+                (player.players * 1.68 - 1) and Name == player.name then
                 send_global_message(Name ..
-                                        ' just received a new high score! Rank: ' ..
-                                        i .. ' Life: ' .. LifeTime)
+                                        ' score was lower than their previous score on the leaderboard. Score will not be counted.')
+                hasHigherScoreOnLeaderboard = true
+            end
+            if Name == player.name then
+                table.remove(hunterRanks, i)
+                isOnLeaderboard = true
+                previousRankIdx = i
                 break
             end
         end
 
-        for i, player in pairs(ranks) do
-            if i > newhighScoreIdx and newhighScoreIdx ~= -1 and Name == ranks[i].name then
-                table.remove(ranks, i)
-                i = i - 1
+        if hasHigherScoreOnLeaderboard == false then
+            for i, player in pairs(hunterRanks) do
+                if LifeTime * (total_players * 1.68 - 1) > player.points *
+                    (player.players * 1.68 - 1) then
+                    local rank = {name = Name, points = LifeTime, players = total_players}
+                    print(rank.points)
+                    table.insert(hunterRanks, i, rank)
+                    newhighScoreIdx = i
+                    send_global_message(Name ..
+                                            ' just received a new high score! Rank: ' ..
+                                            i .. ' Life: ' .. LifeTime)
+                    break
+                end
+            end
+    
+            for i, player in pairs(hunterRanks) do
+                if i > newhighScoreIdx and newhighScoreIdx ~= -1 and Name == hunterRanks[i].name then
+                    table.remove(hunterRanks, i)
+                    print('we did this')
+                    i = i - 1
+                end
+            end
+    
+            saveTable(hunterRanks, 'rankshunter' .. selectedSpawn.name .. '.json')
+        end
+    end
+
+    if scoreboardTeam == 'hiders' then
+        for i, player in pairs(hiderRanks) do
+            if LifeTime * (total_players * 1.68 - 1) < player.points *
+                (player.players * 1.68 - 1) and Name == player.name then
+                send_global_message(Name ..
+                                        ' score was lower than their previous score on the leaderboard. Score will not be counted.')
+                hasHigherScoreOnLeaderboard = true
+            end
+            if Name == player.name then
+                table.remove(hiderRanks, i)
+                isOnLeaderboard = true
+                previousRankIdx = i
+                break
             end
         end
 
-        saveTable(ranks, 'ranks' .. selectedSpawn.name .. '.json')
-    end
+
+        if hasHigherScoreOnLeaderboard == false then
+            for i, player in pairs(hiderRanks) do
+                if LifeTime * (total_players * 1.68 - 1) > player.points *
+                    (player.players * 1.68 - 1) then
+                    local rank = {name = Name, points = LifeTime, players = total_players}
+                    print(rank.points)
+                    table.insert(hiderRanks, i, rank)
+                    newhighScoreIdx = i
+                    send_global_message(Name ..
+                                            ' just received a new high score! Rank: ' ..
+                                            i .. ' Life: ' .. LifeTime)
+                    break
+                end
+            end
+    
+            for i, player in pairs(hiderRanks) do
+                if i > newhighScoreIdx and newhighScoreIdx ~= -1 and Name == hiderRanks[i].name then
+                    table.remove(hiderRanks, i)
+                    i = i - 1
+                end
+            end
+    
+            saveTable(hiderRanks, 'rankshider' .. selectedSpawn.name .. '.json')
+        end
+    end 
 end)
 
 local function save_score(name, score) file = io.open('scores.txt') end
@@ -516,12 +590,23 @@ Citizen.CreateThread(function()
     while true do
         Citizen.Wait(1000)
         if selectedSpawn ~= nil then
-            ranks =
-                loadTable('ranks' .. selectedSpawn.name .. '.json')
+            hunterRanks =
+                loadTable('rankshunter' .. selectedSpawn.name .. '.json')
             for _, playerId in ipairs(GetSpawnedPlayers()) do
-                TriggerClientEvent('OnClearRanks', playerId)
-                for _, player in pairs(ranks) do
-                    TriggerClientEvent('OnUpdateRanks', playerId, player.name,
+                TriggerClientEvent('OnClearHunterRanks', playerId)
+                for _, player in pairs(hunterRanks) do
+                    TriggerClientEvent('OnUpdateHunterRanks', playerId, player.name,
+                                    player.points, player.players, _)
+                end
+            end
+
+            
+            hiderRanks =
+                loadTable('rankshider' .. selectedSpawn.name .. '.json')
+            for _, playerId in ipairs(GetSpawnedPlayers()) do
+                TriggerClientEvent('OnClearHiderRanks', playerId)
+                for _, player in pairs(hiderRanks) do
+                    TriggerClientEvent('OnUpdateHiderRanks', playerId, player.name,
                                     player.points, player.players, _)
                 end
             end

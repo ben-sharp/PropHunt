@@ -7,6 +7,10 @@ RegisterNetEvent('onPropHuntAfterWarmup')
 RegisterNetEvent('OnGameEnded')
 RegisterNetEvent('OnUpdateRanks')
 RegisterNetEvent('OnClearRanks')
+RegisterNetEvent('OnUpdateHunterRanks')
+RegisterNetEvent('OnClearHunterRanks')
+RegisterNetEvent('OnUpdateHiderRanks')
+RegisterNetEvent('OnClearHiderRanks')
 
 local function has_value(tab, val)
     for index, value in ipairs(tab) do if value == val then return true end end
@@ -212,7 +216,12 @@ Citizen.CreateThread(function()
 
                 local visibilityText = ''
                 if ourTeamType == 'hunter' then
-                    --
+                    
+                    AddTextComponentString(
+                        ("~g~%.1f ~s~Seconds\n ~g~%.0f ~s~Score\n~y~%s Hunters\n~y~%s Hiders"):format(totalLife,
+                                                                    currentScore, #hunters, #hiders))
+
+                    DrawText(0.8, 0.1)   
                 else
                     if not isInvisible then
                         visibilityText = '~r~Visible '
@@ -577,6 +586,30 @@ ranks = {
     {rank = 9, name = 'None', points = 0, players = 0},
     {rank = 10, name = 'None', points = 0, players = 0}
 }
+hunterRanks = {
+    {rank = 1, name = 'None', points = 0, players = 0},
+    {rank = 2, name = 'None', points = 0, players = 0},
+    {rank = 3, name = 'None', points = 0, players = 0},
+    {rank = 4, name = 'None', points = 0, players = 0},
+    {rank = 5, name = 'None', points = 0, players = 0},
+    {rank = 6, name = 'None', points = 0, players = 0},
+    {rank = 7, name = 'None', points = 0, players = 0},
+    {rank = 8, name = 'None', points = 0, players = 0},
+    {rank = 9, name = 'None', points = 0, players = 0},
+    {rank = 10, name = 'None', points = 0, players = 0}
+}
+hiderRanks = {
+    {rank = 1, name = 'None', points = 0, players = 0},
+    {rank = 2, name = 'None', points = 0, players = 0},
+    {rank = 3, name = 'None', points = 0, players = 0},
+    {rank = 4, name = 'None', points = 0, players = 0},
+    {rank = 5, name = 'None', points = 0, players = 0},
+    {rank = 6, name = 'None', points = 0, players = 0},
+    {rank = 7, name = 'None', points = 0, players = 0},
+    {rank = 8, name = 'None', points = 0, players = 0},
+    {rank = 9, name = 'None', points = 0, players = 0},
+    {rank = 10, name = 'None', points = 0, players = 0}
+}
 
 AddEventHandler('OnClearRanks', function()
     ranks = {
@@ -606,6 +639,68 @@ AddEventHandler('OnUpdateRanks', function(name, lifetime, players, rank)
         end
     end
 end)
+
+
+AddEventHandler('OnClearHunterRanks', function()
+    hunterRanks = {
+        {rank = 1, name = 'None', points = 0, players = 0},
+        {rank = 2, name = 'None', points = 0, players = 0},
+        {rank = 3, name = 'None', points = 0, players = 0},
+        {rank = 4, name = 'None', points = 0, players = 0},
+        {rank = 5, name = 'None', points = 0, players = 0},
+        {rank = 6, name = 'None', points = 0, players = 0},
+        {rank = 7, name = 'None', points = 0, players = 0},
+        {rank = 8, name = 'None', points = 0, players = 0},
+        {rank = 9, name = 'None', points = 0, players = 0},
+        {rank = 10, name = 'None', points = 0, players = 0}
+    }
+end)
+
+AddEventHandler('OnUpdateHunterRanks', function(name, lifetime, players, rank)
+    scoreToBeat[name] = lifetime * (players * 1.68 - 1)
+    currentRank[name] = rank
+    for _, player in pairs(hunterRanks) do
+        if lifetime * (players * 1.68 - 1) > player.points *
+            (player.players * 1.68 - 1) then
+            hunterRanks[_].points = lifetime
+            hunterRanks[_].name = name
+            hunterRanks[_].players = players
+            break
+        end
+    end
+end)
+
+
+
+AddEventHandler('OnClearHiderRanks', function()
+    hiderRanks = {
+        {rank = 1, name = 'None', points = 0, players = 0},
+        {rank = 2, name = 'None', points = 0, players = 0},
+        {rank = 3, name = 'None', points = 0, players = 0},
+        {rank = 4, name = 'None', points = 0, players = 0},
+        {rank = 5, name = 'None', points = 0, players = 0},
+        {rank = 6, name = 'None', points = 0, players = 0},
+        {rank = 7, name = 'None', points = 0, players = 0},
+        {rank = 8, name = 'None', points = 0, players = 0},
+        {rank = 9, name = 'None', points = 0, players = 0},
+        {rank = 10, name = 'None', points = 0, players = 0}
+    }
+end)
+
+AddEventHandler('OnUpdateHiderRanks', function(name, lifetime, players, rank)
+    scoreToBeat[name] = lifetime * (players * 1.68 - 1)
+    currentRank[name] = rank
+    for _, player in pairs(hiderRanks) do
+        if lifetime * (players * 1.68 - 1) > player.points *
+            (player.players * 1.68 - 1) then
+            hiderRanks[_].points = lifetime
+            hiderRanks[_].name = name
+            hiderRanks[_].players = players
+            break
+        end
+    end
+end)
+
 
 Citizen.CreateThread(function()
     while true do
