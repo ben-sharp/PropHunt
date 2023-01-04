@@ -409,6 +409,7 @@ AddEventHandler('onPropHuntStart',
     totalLife = 0
     timeBelowSpeed = 0
     timeRemainingOnFoot = 60
+    currentScore = 0
     shouldNotifyAboutDeath = true
     hunters = inHunters
     hiders = inHiders
