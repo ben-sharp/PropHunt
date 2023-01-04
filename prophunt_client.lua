@@ -21,6 +21,7 @@ local totalLife = 0
 local gameStarted = false
 local shouldNotifyAboutDeath = true
 local hunters = {}
+local hiders = {}
 local hunterPed = 0
 local afkTime = 0
 local isMarkedAfk = false
@@ -102,14 +103,14 @@ Citizen.CreateThread(function()
         NetworkSetFriendlyFireOption(true)
 
         if GetEntityHealth(playerPed) <= 0 then
-            respawnCooldown = 10
-            timeDead = timeDead + 0.1
-            if ourTeamType == 'hunter' and gameStarted and totalLife > 0 and shouldNotifyAboutDeath then
+            respawnCooldown = 5
+            timeDead = timeDead + 0.1 
+            if gameStarted and totalLife > 0 and shouldNotifyAboutDeath then
                 shouldNotifyAboutDeath = false
                 TriggerServerEvent('OnNotifyKilled', GetPlayerName(PlayerId()), totalLife)
             end
+
             if timeDead > 10 then
-                respawnCooldown = 5          
                 TriggerServerEvent('OnRequestJoinInProgress', GetPlayerServerId(PlayerId()))
             end
         else
@@ -130,7 +131,6 @@ Citizen.CreateThread(function()
 
         local playerName = GetPlayerName(PlayerId())
         
-        -- if in a car
         local coords = GetEntityCoords(PlayerPedId())
     
         if forceHunterBlipVisible[playerName] and ourTeamType == 'hunter' then
@@ -142,12 +142,9 @@ Citizen.CreateThread(function()
 
             TriggerServerEvent('OnNotifyHunterBlipArea', playerName, true, coords.x, coords.y, coords.z)
         end
-        needsResetHealth = true
         
         SetEntityInvincible(GetPlayerPed(-1), false)
             
-        -- else
-
         if not forceHunterBlipVisible[playerName] and ourTeamType == 'hunter' then
             TriggerEvent('OnNotifyHuntersBlipVisible', playerName, true)
             TriggerServerEvent('OnNotifyHunterBlipVisible', playerName, true) 
@@ -158,27 +155,9 @@ Citizen.CreateThread(function()
             TriggerServerEvent('OnNotifyHunterBlipArea', playerName, false, 0, 0, 0)
         end
 
-        if needsResetHealth then
-            needsResetHealth = false
-            if ourTeamType == 'hunter' then
-                -- SetPedMaxHealth(GetPlayerPed(-1), 400)
-                -- SetEntityHealth(GetPlayerPed(-1), 400)
-                -- SetPedArmour(GetPlayerPed(-1), 100)
-            else
-                -- SetPedMaxHealth(GetPlayerPed(-1), 200)
-                -- SetEntityHealth(GetPlayerPed(-1), 200)
-                -- SetPedArmour(GetPlayerPed(-1), 0)
-            end
-        end
-
         timeRemainingOnFoot = math.clamp(timeRemainingOnFoot + 0.1, 0, 60)
 
-        if ourTeamType == 'hunter' then
-            -- SetEntityInvincible(GetPlayerPed(-1), true)
-        else
-            SetEntityInvincible(GetPlayerPed(-1), false)
-        end
-        -- here
+        SetEntityInvincible(GetPlayerPed(-1), false)
        
         SetPoliceRadarBlips(false)
         if respawnCooldown > 0 then
@@ -206,8 +185,15 @@ Citizen.CreateThread(function()
             totalLife =  totalLife + delta_time
         end
         timestart = GetGameTimer()
+        
+        if(gameStarted) then
+            local scoreMultiplier = isInvisible and 5 or 1
+            currentScore = currentScore + (1 * scoreMultiplier) -- totalLife * (totalPlayers * 1.68 - 1) * scoreMultiplier
+        end
     end
 end)
+
+
 Citizen.CreateThread(function()
     while true do
         Wait(0)
@@ -234,12 +220,9 @@ Citizen.CreateThread(function()
                         visibilityText  = '~g~Hidden '
                     end
                     
-                    local scoreMultiplier = 10 
-
-                    currentScore = totalLife * (totalPlayers * 1.68 - 1) * scoreMultiplier
                     AddTextComponentString(
-                        ("~g~%.1f ~s~Seconds\n ~g~%.0f ~s~Score\n%s\n~y~%s Hunters"):format(totalLife,
-                                                                    currentScore, visibilityText, #hunters))
+                        ("~g~%.1f ~s~Seconds\n ~g~%.0f ~s~Score\n%s\n~y~%s Hunters\n~y~%s Hiders"):format(totalLife,
+                                                                    currentScore, visibilityText, #hunters, #hiders))
 
                     DrawText(0.8, 0.1)   
                 end
@@ -420,14 +403,15 @@ AddEventHandler('onPropHuntAfterWarmup', function()
 end)
 
 AddEventHandler('onPropHuntStart',
-                function(teamtype, spawnPos, spawnRot, inHunters, inSelectedSpawn, isGameStarted)
-    print("Client_onPropHuntStart", teamtype, spawnPos, spawnRot, inHunters, inSelectedSpawn, isGameStarted)
+                function(teamtype, spawnPos, spawnRot, inHunters, inSelectedSpawn, isGameStarted, inHiders)
+    print("Client_onPropHuntStart", teamtype, spawnPos, spawnRot, inHunters, inSelectedSpawn, isGameStarted, inHiders)
     -- account for the argument not being passed
     totalLife = 0
     timeBelowSpeed = 0
     timeRemainingOnFoot = 60
     shouldNotifyAboutDeath = true
     hunters = inHunters
+    hiders = inHiders
 
     currentRank = {}
     scoreToBeat = {}
@@ -573,6 +557,11 @@ end)
 RegisterNetEvent("OnUpdateHunters")
 AddEventHandler('OnUpdateHunters', function(inHunters)
    hunters = inHunters
+end)
+
+RegisterNetEvent("OnUpdateHiders")
+AddEventHandler('OnUpdateHiders', function(inHiders)
+   hiders = inHiders
 end)
 
 ranks = {

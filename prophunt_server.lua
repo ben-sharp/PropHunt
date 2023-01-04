@@ -1,5 +1,6 @@
 local spawnedPlayers = {}
 local hunters = {}
+local hiders = {}
 local afkplayers = {}
 local timerCountdown = 30
 local gameStarted = false
@@ -53,19 +54,28 @@ AddEventHandler('playerDropped', function(reason)
         end
     end
     print('DroppedIdx: ' .. droppedIdx .. ' DroppedPlayerId ' .. droppedPlayerId)
+    if  has_value(hiders, GetPlayerName(source)) then
+        outHiderIdx = -1
+        for Idx, v in ipairs(hiders) do
+            if v == GetPlayerName(source) then
+            outHiderIdx = Idx
+            end
+        end
+        if outHiderIdx ~= -1 then
+            table.remove(hiders, outHiderIdx)
+        end
+        TriggerClientEvent('OnUpdateHiders', -1, hiders)
+    end
     if  has_value(hunters, GetPlayerName(source)) then
-
         outHunterIdx = -1
         for Idx, v in ipairs(hunters) do
             if v == GetPlayerName(source) then
             outHunterIdx = Idx
             end
         end
-    
         if outHunterIdx ~= -1 then
             table.remove(hunters, outHunterIdx)
         end
-
         TriggerClientEvent('OnUpdateHunters', -1, hunters)
     end
     if spawnedPlayers[droppedIdx] ~= nil then
@@ -189,6 +199,8 @@ AddEventHandler('OnRequestedStart', function()
         local name = GetPlayerName(playerId)
         if has_value(hunterIdxs, i) then
             hunters[#hunters + 1] = name
+        else
+            hiders[#hiders + 1] = name
         end
     end
 
@@ -199,14 +211,12 @@ AddEventHandler('OnRequestedStart', function()
             hunterName = name
             send_global_message(
                 ('^1%s was selected as a hunter!'):format(name))
-            TriggerClientEvent('onPropHuntStart', playerId, 'hunter', selectedSpawn.hunterSpawnVec, selectedSpawn.hunterSpawnRot, hunters, selectedSpawn, true)
-            
+            TriggerClientEvent('onPropHuntStart', playerId, 'hunter', selectedSpawn.hunterSpawnVec, selectedSpawn.hunterSpawnRot, hunters, selectedSpawn, true, hiders)
             if not hasStarted then
                 TriggerClientEvent('onPropHuntAfterWarmup', playerId)
                 hasStarted = true
             end
             send_global_message('^3' .. total_players .. ' players in game.')
-            print('Spawning ' .. name .. ' as the hunter')
         end
     end
     
@@ -214,12 +224,11 @@ AddEventHandler('OnRequestedStart', function()
     for i, playerId in ipairs(spawnedPlayers) do
         local name = GetPlayerName(playerId)
         if not has_value(hunterIdxs, i) then
-            print('doing this one', hiderSpawn)
             TriggerClientEvent('onPropHuntStart', playerId, 'hiders',
                                 hiderSpawn +
                                     vector3(math.random(-10, 10),
                                             math.random(-10, 10), 0),
-                                selectedSpawn.hiderSpawnRot, hunters, selectedSpawn, true)
+                                selectedSpawn.hiderSpawnRot, hunters, selectedSpawn, true, hiders)
             print('Spawning ' .. name .. ' as a hider')
         end
     end
@@ -275,7 +284,7 @@ AddEventHandler('OnRequestJoinInProgress', function(playerId)
                 hiderSpawn +
                                 vector3(math.random(-10, 10),
                                         math.random(-10, 10), 0),
-                            respawnRot, hunters, selectedSpawn, gameStarted)
+                            respawnRot, hunters, selectedSpawn, gameStarted, hiders)
         end
     end
 end)
@@ -315,16 +324,33 @@ AddEventHandler('OnNotifyHighScore', function(Name, LifeTime)
         end
     end
 
+    outHiderIdx = -1
+    for Idx, v in ipairs(hiders) do
+        if v == GetPlayerName(source) then
+            outHiderIdx = Idx
+        end
+    end
+
     if outHunterIdx ~= -1 then
         table.remove(hunters, outHunterIdx)
+    end
+
+    if outHiderIdx ~= -1 then
+        table.remove(hiders, outHiderIdx)
     end
 
     for d in ipairs(hunters) do
         print('Hunter: ' .. d .. ' remaining')
     end
 
+    for d in ipairs(hiders) do
+        print('Hider: ' .. d .. ' remaining')
+    end
+    
     TriggerClientEvent('OnUpdateHunters', -1, hunters)
-    if #hunters == 0 then
+    TriggerClientEvent('OnUpdateHiders', -1, hiders)
+
+    if #hunters == 0 or #hiders == 0 then
         gameStarted = false
         timerCountdown = 15
         for _, playerId in ipairs(GetSpawnedPlayers()) do
@@ -332,9 +358,75 @@ AddEventHandler('OnNotifyHighScore', function(Name, LifeTime)
         end      
     end
 
+
+end)
+
+RegisterNetEvent('OnNotifyDriverBlipArea')
+AddEventHandler('OnNotifyDriverBlipArea', function(enabled, posX, posY, posZ)
+    TriggerClientEvent('OnNotifyDriverBlipArea', -1, enabled, posX, posY, posZ)
+end)
+
+RegisterNetEvent('OnNotifyKilled')
+AddEventHandler('OnNotifyKilled', function(Name, LifeTime)
+
+    if not gameStarted then
+       return
+    end    
+   
+    outHunterIdx = -1
+    for Idx, v in ipairs(hunters) do
+        if v == GetPlayerName(source) then
+        outHunterIdx = Idx
+        end
+    end
+
+    outHiderIdx = -1
+    for Idx, v in ipairs(hiders) do
+        if v == GetPlayerName(source) then
+        outHiderIdx = Idx
+        end
+    end
+
+    if outHunterIdx ~= -1 then
+        table.remove(hunters, outHunterIdx)
+    
+        send_global_message(GetPlayerName(source) .. ' has been killed! Total Life: ' .. LifeTime ..
+        ' Seconds\nHunters Remaining: ' .. #hunters)
+    
+    end
+
+    if outHiderIdx ~= -1 then
+        table.remove(hiders, outHiderIdx)
+    
+        send_global_message(GetPlayerName(source) .. ' has been killed! Total Life: ' .. LifeTime ..
+        ' Seconds\nHiders Remaining: ' .. #hiders)
+    
+    end
+
+    for i, d in ipairs(hunters) do
+        print('Hunter: ' .. d .. ' remaining')
+    end
+
+    for i, d in ipairs(hiders) do
+        print('Hider: ' .. d .. ' remaining')
+    end
+
+
+    TriggerClientEvent('OnUpdateHunters', -1, hunters)
+    TriggerClientEvent('OnUpdateHiders', -1, hiders)
+
+    if #hunters == 0 or #hiders == 0 then
+        gameStarted = false
+        timerCountdown = 15
+        newhighScoreIdx = -1
+        for _, playerId in ipairs(GetSpawnedPlayers()) do
+            TriggerClientEvent('OnGameEnded', playerId)
+        end
+    end
+
     newhighScoreIdx = -1
 
-    send_global_message('^6' .. Name .. ' has successfully extracted! Hunters Remaining: ' .. #hunters)
+    send_global_message('^6' .. Name .. ' has ended the game!')
    
 
     local isOnLeaderboard = false
@@ -383,52 +475,6 @@ AddEventHandler('OnNotifyHighScore', function(Name, LifeTime)
 
         saveTable(ranks, 'ranks' .. selectedSpawn.name .. '.json')
     end
-
-end)
-
-RegisterNetEvent('OnNotifyDriverBlipArea')
-AddEventHandler('OnNotifyDriverBlipArea', function(enabled, posX, posY, posZ)
-    TriggerClientEvent('OnNotifyDriverBlipArea', -1, enabled, posX, posY, posZ)
-end)
-
-RegisterNetEvent('OnNotifyKilled')
-AddEventHandler('OnNotifyKilled', function(Name, LifeTime)
-
-    if not gameStarted then
-       return
-    end    
-   
-    outHunterIdx = -1
-    for Idx, v in ipairs(hunters) do
-        if v == GetPlayerName(source) then
-        outHunterIdx = Idx
-        end
-    end
-
-    if outHunterIdx ~= -1 then
-        table.remove(hunters, outHunterIdx)
-    end
-
-   
-
-    send_global_message(GetPlayerName(source) .. ' has been killed! Total Life: ' .. LifeTime ..
-    ' Seconds\nHunters Remaining: ' .. #hunters)
-
-    for i, d in ipairs(hunters) do
-        print('Hunter: ' .. d .. ' remaining')
-    end
-
-    TriggerClientEvent('OnUpdateHunters', -1, hunters)
-
-    if #hunters == 0 then
-        gameStarted = false
-        timerCountdown = 15
-        newhighScoreIdx = -1
-        for _, playerId in ipairs(GetSpawnedPlayers()) do
-            TriggerClientEvent('OnGameEnded', playerId)
-        end
-    end
-
 end)
 
 local function save_score(name, score) file = io.open('scores.txt') end

@@ -338,7 +338,7 @@
               "model": "prop_barrier_work01d"
           },
           {
-              "context": "Northern Lights - Cannabis Indica",
+              "context": "",
               "header": "Weed Plant",
               "offset": {
                   "z": -1,
@@ -407,7 +407,9 @@
         {"context": "","header": "Car Jack","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_carjack"},
         {"context": "","header": "Compressor","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_compressor_02"},
         {"context": "","header": "Deck Chair","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_old_deck_chair"},
+        {"context": "","header": "Doghouse","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_doghouse_01"},
         {"context": "","header": "Engine Hoist","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_engine_hoist"},
+        {"context": "","header": "Letterbox","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_letterbox_02"},
         {"context": "","header": "Milk Crate","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_crate_11b"},
         {"context": "","header": "Oil Barrel","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_barrel_03a"},
         {"context": "","header": "Old Couch","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_rub_couch04"},
@@ -426,7 +428,7 @@
         {"context": "","header": "Toolbox","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_tool_box_06"},
         {"context": "","header": "Wheelbarrow","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_wheelbarrow01a"},
         {"context": "","header": "Wooden Chair","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_clown_chair"},
-        {"context": "Northern Lights - Cannabis Indica","header": "Weed Plant","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_weed_01"}
+        {"context": "","header": "Weed Plant","offset": {"z": -1,"y": 0,"x": 0},"model": "prop_weed_01"}
       ]
   }
 ]
