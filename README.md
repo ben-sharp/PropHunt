@@ -21,9 +21,12 @@ Clone the repo and add its contents to a folder called `PropHunt` inside your `r
 ## Dependencies
 [PolyZone](https://github.com/mkafrin/PolyZone/releases) is required for the playzone boundaries, download `PolyZone.zip`, add it to `resources` as a folder named `PolyZone` and add `ensure PolyZone` to your `server.cfg` - use `start PolyZone` if it's not running. 
 
+[nh-context](https://github.com/whooith/nh-context/releases/tag/v2.21) is required for the prop list and rotation menus, add it to `resources` as a folder named `nh-context` and add `ensure nh-context` to your `server.cfg` - use `start nh-context` if it's not running.
+
 # Todos / Ideas
 - [x] fix high scores and ranks so they work, `hunters` and `hiders` should have separate scoreboards
 - [ ] add working scoreboard
 - [ ] fix up blips so `hiders` are never visible, `hunter` is always visible
 - [ ] send `hunters` away during a timer on respawn? (idea is they may know current hiders location and they may want to move)
 - [ ] `hunters` could regain HP if they kill a `hider`?
+- [ ] be cool if the playzone boundary only showed up when you get close to it
